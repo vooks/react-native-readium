@@ -156,8 +156,21 @@ class HybridReadiumView(private val context: android.content.Context) : HybridRe
     }
   }
 
-  override fun goForward() { fragment?.goForward() }
-  override fun goBackward() { fragment?.goBackward() }
+  // goForward/goBackward mutate the FragmentManager/ViewPager and must run on
+  // the main thread. The Nitro method can arrive on a background thread, so
+  // marshal to main like goTo/destroy do — otherwise Readium throws
+  // "Must be called from main thread of fragment host" and the pager desyncs
+  // (the tap is dropped, then a later swipe flushes the accumulated target).
+  private fun runOnMainThread(action: Runnable) {
+    if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+      action.run()
+    } else {
+      hostView.post(action)
+    }
+  }
+
+  override fun goForward() = runOnMainThread { fragment?.goForward() }
+  override fun goBackward() = runOnMainThread { fragment?.goBackward() }
   override fun destroy() {
     if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
       cleanup()
