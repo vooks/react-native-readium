@@ -19,6 +19,7 @@ public protocol HybridReadiumViewSpec_protocol: HybridObject, HybridView {
   var onDecorationActivated: ((_ event: DecorationActivatedEvent) -> Void)? { get set }
   var onSelectionChange: ((_ event: SelectionEvent) -> Void)? { get set }
   var onSelectionAction: ((_ event: SelectionActionEvent) -> Void)? { get set }
+  var onTap: (() -> Void)? { get set }
 
   // Methods
   func goTo(locator: Locator) throws -> Void

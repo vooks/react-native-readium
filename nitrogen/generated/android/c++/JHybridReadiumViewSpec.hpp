@@ -68,6 +68,8 @@ namespace margelo::nitro::readium {
     void setOnSelectionChange(const std::optional<std::function<void(const SelectionEvent& /* event */)>>& onSelectionChange) override;
     std::optional<std::function<void(const SelectionActionEvent& /* event */)>> getOnSelectionAction() override;
     void setOnSelectionAction(const std::optional<std::function<void(const SelectionActionEvent& /* event */)>>& onSelectionAction) override;
+    std::optional<std::function<void()>> getOnTap() override;
+    void setOnTap(const std::optional<std::function<void()>>& onTap) override;
 
   public:
     // Methods

@@ -22,6 +22,12 @@ import com.reactnativereadium.utils.padSystemUi
 import com.reactnativereadium.utils.showSystemUi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import org.readium.r2.navigator.OverflowableNavigator
+import org.readium.r2.navigator.input.InputListener
+import org.readium.r2.navigator.input.TapEvent
+import org.readium.r2.navigator.util.DirectionalNavigationAdapter
+import org.readium.r2.shared.ExperimentalReadiumApi
 
 /*
  * Adds fullscreen support to the BaseReaderFragment
@@ -48,6 +54,8 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
         super.onViewCreated(view, savedInstanceState)
         navigatorFragment = navigator as Fragment
 
+        configureTapHandling()
+
         // Initialize position label manager - simple overlay, matching iOS approach
         positionLabelManager = PositionLabelManager(
             containerView = binding.fragmentReaderContainer,
@@ -72,6 +80,33 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
             updateSystemUiPadding(container, insets)
             insets
         }
+    }
+
+    // Vooks: mirror the iOS gesture arbitration. DirectionalNavigationAdapter
+    // turns pages on edge taps; a second listener forwards center taps to JS as
+    // Event.Tap so the app toggles its own reader chrome. Swipes still page-turn.
+    @OptIn(ExperimentalReadiumApi::class)
+    private fun configureTapHandling() {
+        val overflowNavigator = navigator as? OverflowableNavigator ?: return
+        // Narrow edges (15% each side → ~70% center toggle column); 44dp floor
+        // keeps 15% honored on phones instead of the 80dp default clamping it.
+        // Kept in sync with the iOS pointer policy in ReaderViewController.swift.
+        overflowNavigator.addInputListener(
+            DirectionalNavigationAdapter(
+                overflowNavigator,
+                minimumHorizontalEdgeSize = 44.0,
+                horizontalEdgeThresholdPercent = 0.15,
+                animatedTransition = true,
+            )
+        )
+        overflowNavigator.addInputListener(object : InputListener {
+            override fun onTap(event: TapEvent): Boolean {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    channel.send(ReaderViewModel.Event.Tap)
+                }
+                return true
+            }
+        })
     }
 
     override fun onDestroyView() {

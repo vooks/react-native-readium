@@ -236,6 +236,9 @@ export interface ReadiumViewProps extends HybridViewProps {
   onDecorationActivated?: (event: DecorationActivatedEvent) => void;
   onSelectionChange?: (event: SelectionEvent) => void;
   onSelectionAction?: (event: SelectionActionEvent) => void;
+  // Vooks: Readium's already-arbitrated center tap (edge taps still page-turn),
+  // forwarded so the app can toggle its reader chrome without a JS overlay.
+  onTap?: () => void;
 }
 
 export interface ReadiumViewMethods extends HybridViewMethods {

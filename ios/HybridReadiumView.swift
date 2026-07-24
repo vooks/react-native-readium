@@ -45,6 +45,7 @@ class HybridReadiumView: HybridReadiumViewSpec {
   var onDecorationActivated: ((DecorationActivatedEvent) -> Void)? = nil
   var onSelectionChange: ((SelectionEvent) -> Void)? = nil
   var onSelectionAction: ((SelectionActionEvent) -> Void)? = nil
+  var onTap: (() -> Void)? = nil
 
   // MARK: - Private state
 
@@ -183,6 +184,10 @@ class HybridReadiumView: HybridReadiumViewSpec {
     .store(in: &subscriptions)
 
     readerViewController = vc
+
+    // Vooks: forward Readium's already-arbitrated center tap to the JS onTap
+    // event (edge taps still page-turn via DirectionalNavigationAdapter).
+    vc.didTap = { [weak self] in self?.onTap?() }
 
     // Apply pending state
     if preferences != nil { updatePreferences() }

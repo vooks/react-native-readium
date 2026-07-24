@@ -120,6 +120,20 @@ abstract class HybridReadiumViewSpec: HybridView() {
       onSelectionAction = value?.let { it }
     }
 
+  abstract var onTap: (() -> Unit)?
+  
+  private var onTap_cxx: Func_void?
+    @Keep
+    @DoNotStrip
+    get() {
+      return onTap?.let { Func_void_java(it) }
+    }
+    @Keep
+    @DoNotStrip
+    set(value) {
+      onTap = value?.let { it }
+    }
+
   // Methods
   @DoNotStrip
   @Keep

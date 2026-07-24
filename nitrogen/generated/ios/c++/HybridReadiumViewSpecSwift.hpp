@@ -197,6 +197,13 @@ namespace margelo::nitro::readium {
     inline void setOnSelectionAction(const std::optional<std::function<void(const SelectionActionEvent& /* event */)>>& onSelectionAction) noexcept override {
       _swiftPart.setOnSelectionAction(onSelectionAction);
     }
+    inline std::optional<std::function<void()>> getOnTap() noexcept override {
+      auto __result = _swiftPart.getOnTap();
+      return __result;
+    }
+    inline void setOnTap(const std::optional<std::function<void()>>& onTap) noexcept override {
+      _swiftPart.setOnTap(onTap);
+    }
 
   public:
     // Methods
