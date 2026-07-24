@@ -41,6 +41,12 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
 
     private var positionLabelManager: PositionLabelManager? = null
 
+    // Vooks: retained so onDestroyView can remove the exact instances added in
+    // configureTapHandling — otherwise they accumulate (and leak this fragment)
+    // when the view is torn down and rebuilt.
+    private var directionalNavigationAdapter: InputListener? = null
+    private var tapInputListener: InputListener? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -91,25 +97,36 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
         // Narrow edges (15% each side → ~70% center toggle column); 44dp floor
         // keeps 15% honored on phones instead of the 80dp default clamping it.
         // Kept in sync with the iOS pointer policy in ReaderViewController.swift.
-        overflowNavigator.addInputListener(
-            DirectionalNavigationAdapter(
-                overflowNavigator,
-                minimumHorizontalEdgeSize = 44.0,
-                horizontalEdgeThresholdPercent = 0.15,
-                animatedTransition = true,
-            )
+        val adapter = DirectionalNavigationAdapter(
+            overflowNavigator,
+            minimumHorizontalEdgeSize = 44.0,
+            horizontalEdgeThresholdPercent = 0.15,
+            animatedTransition = true,
         )
-        overflowNavigator.addInputListener(object : InputListener {
+        overflowNavigator.addInputListener(adapter)
+        directionalNavigationAdapter = adapter
+
+        val tapListener = object : InputListener {
             override fun onTap(event: TapEvent): Boolean {
                 viewLifecycleOwner.lifecycleScope.launch {
                     channel.send(ReaderViewModel.Event.Tap)
                 }
                 return true
             }
-        })
+        }
+        overflowNavigator.addInputListener(tapListener)
+        tapInputListener = tapListener
     }
 
+    @OptIn(ExperimentalReadiumApi::class)
     override fun onDestroyView() {
+        (navigator as? OverflowableNavigator)?.let { overflowNavigator ->
+            directionalNavigationAdapter?.let { overflowNavigator.removeInputListener(it) }
+            tapInputListener?.let { overflowNavigator.removeInputListener(it) }
+        }
+        directionalNavigationAdapter = null
+        tapInputListener = null
+
         positionLabelManager?.cleanup()
         positionLabelManager = null
         _binding = null
