@@ -28,7 +28,9 @@ def getExtOrIntegerDefault(name) {
 
 def reactNativeArchitectures() {
   def value = rootProject.getProperties().get("reactNativeArchitectures")
-  return value ? value.split(",") : ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+  return value
+    ? value.split(",").collect { it.trim() }.findAll { it }
+    : ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
 }
 
 android {
