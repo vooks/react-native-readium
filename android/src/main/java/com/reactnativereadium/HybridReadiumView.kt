@@ -102,6 +102,7 @@ class HybridReadiumView(private val context: android.content.Context) : HybridRe
   override var onDecorationActivated: ((event: DecorationActivatedEvent) -> Unit)? = null
   override var onSelectionChange: ((event: SelectionEvent) -> Unit)? = null
   override var onSelectionAction: ((event: SelectionActionEvent) -> Unit)? = null
+  override var onTap: (() -> Unit)? = null
 
   private fun ensureService() {
     if (svc == null) {
@@ -350,6 +351,9 @@ class HybridReadiumView(private val context: android.content.Context) : HybridRe
             selectedText = event.selectedText,
             actionId = event.actionId
           ))
+        }
+        is ReaderViewModel.Event.Tap -> {
+          onTap?.invoke()
         }
       }
     }

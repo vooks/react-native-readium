@@ -27,4 +27,5 @@ export type ReadiumProps = {
   onDecorationActivated?: (event: DecorationActivatedEvent) => void;
   onSelectionChange?: (event: SelectionEvent) => void;
   onSelectionAction?: (event: SelectionActionEvent) => void;
+  onTap?: () => void;
 };

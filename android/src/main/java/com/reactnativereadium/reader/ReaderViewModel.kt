@@ -57,5 +57,7 @@ class ReaderViewModel(
             val locator: Locator,
             val selectedText: String
         ) : Event()
+        // Vooks: Readium's center tap (edge taps page-turn); forwarded to JS onTap.
+        object Tap : Event()
     }
 }

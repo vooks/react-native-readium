@@ -90,6 +90,8 @@ namespace margelo::nitro::readium {
       virtual void setOnSelectionChange(const std::optional<std::function<void(const SelectionEvent& /* event */)>>& onSelectionChange) = 0;
       virtual std::optional<std::function<void(const SelectionActionEvent& /* event */)>> getOnSelectionAction() = 0;
       virtual void setOnSelectionAction(const std::optional<std::function<void(const SelectionActionEvent& /* event */)>>& onSelectionAction) = 0;
+      virtual std::optional<std::function<void()>> getOnTap() = 0;
+      virtual void setOnTap(const std::optional<std::function<void()>>& onTap) = 0;
 
     public:
       // Methods

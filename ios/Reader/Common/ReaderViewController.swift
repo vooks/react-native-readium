@@ -25,6 +25,12 @@ class ReaderViewController: UIViewController, Loggable {
   private var lastKnownLocator: ReadiumShared.Locator?
   private var navigatorInputObserverTokens = Set<InputObservableToken>()
 
+  // Vooks: invoked on a center tap. Edge taps are consumed by
+  // DirectionalNavigationAdapter (page turns) and never reach here, so this
+  // fires only for center taps. HybridReadiumView forwards it to the JS `onTap`
+  // event, which toggles the app's own reader chrome.
+  var didTap: (() -> Void)?
+
   /// This regex matches any string with at least 2 consecutive letters (not limited to ASCII).
   /// It's used when evaluating whether to display the body of a noteref referrer as the note's title.
   /// I.e. a `*` or `1` would not be used as a title, but `on` or `好書` would.
@@ -197,8 +203,17 @@ class ReaderViewController: UIViewController, Loggable {
       return
     }
 
+    // Vooks: horizontal edges only (not `.all`), and narrow — the outer 15% on
+    // each side page-turns, leaving the full-height center ~70% column to toggle
+    // the chrome via `didTap`. The 44pt edge floor (vs the 80pt default) keeps
+    // the 15% honored on phones instead of being clamped to ~20%. Kept in sync
+    // with the Android adapter below.
     DirectionalNavigationAdapter(
-      pointerPolicy: .init(edges: .all),
+      pointerPolicy: .init(
+        edges: .horizontal,
+        minimumHorizontalEdgeSize: 44,
+        horizontalEdgeThresholdPercent: 0.15
+      ),
       animatedTransition: true
     ).bind(to: visualNavigator)
 
@@ -210,7 +225,7 @@ class ReaderViewController: UIViewController, Loggable {
         return false
       }
 
-      self.toggleNavigationBar()
+      self.didTap?()
       return true
     })
     toggleToken.store(in: &navigatorInputObserverTokens)

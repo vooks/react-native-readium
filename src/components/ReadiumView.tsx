@@ -24,6 +24,7 @@ export const ReadiumView = forwardRef<ReadiumViewRef, ReadiumProps>(
       onDecorationActivated,
       onSelectionChange,
       onSelectionAction,
+      onTap,
       preferences,
       decorations,
       selectionActions,
@@ -96,6 +97,7 @@ export const ReadiumView = forwardRef<ReadiumViewRef, ReadiumProps>(
             onDecorationActivated={callback(onDecorationActivated ?? noop)}
             onSelectionChange={callback(onSelectionChange ?? noop)}
             onSelectionAction={callback(onSelectionAction ?? noop)}
+            onTap={callback(onTap ?? noop)}
             hybridRef={callback((ref: any) => {
               hybridRef.current = ref;
             })}

@@ -117,6 +117,11 @@ using namespace margelo::nitro::readium::views;
     swiftPart.setOnSelectionAction(newViewProps.onSelectionAction.value);
     newViewProps.onSelectionAction.isDirty = false;
   }
+  // onTap: optional
+  if (newViewProps.onTap.isDirty) {
+    swiftPart.setOnTap(newViewProps.onTap.value);
+    newViewProps.onTap.isDirty = false;
+  }
 
   swiftPart.afterUpdate();
 
