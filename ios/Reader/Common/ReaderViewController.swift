@@ -118,7 +118,11 @@ class ReaderViewController: UIViewController, Loggable {
   }
 
   func toggleNavigationBar() {
-    navigationBarHidden = !navigationBarHidden
+    // Vooks: the app renders its own reader chrome (top/bottom bars) and drives
+    // the immersive fade from a JS tap-zone. Readium's built-in navigation bar
+    // must never appear on tap, so this toggle is intentionally a no-op. The bar
+    // stays hidden via the `navigationBarHidden = true` default; VoiceOver still
+    // forces it visible through `updateNavigationBar`.
   }
 
   func updateNavigationBar(animated: Bool = true) {
