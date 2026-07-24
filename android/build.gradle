@@ -26,6 +26,11 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['Readium_' + name]).toInteger()
 }
 
+def reactNativeArchitectures() {
+  def value = rootProject.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+}
+
 android {
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   namespace "com.reactnativereadium"
@@ -39,7 +44,7 @@ android {
       cmake {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-        abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
+        abiFilters (*reactNativeArchitectures())
       }
     }
   }
