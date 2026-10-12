@@ -9,9 +9,12 @@ import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.util.FileExtension
 import org.readium.r2.shared.util.AbsoluteUrl
+import org.readium.r2.shared.util.asset.Asset
 import org.readium.r2.shared.util.asset.AssetRetriever
 import org.readium.r2.shared.util.format.FormatHints
 import org.readium.r2.shared.util.http.DefaultHttpClient
+import org.readium.r2.shared.util.http.HttpResource
+import org.readium.r2.shared.util.resource.buffered
 import org.readium.r2.shared.util.toUrl
 import org.readium.r2.streamer.PublicationOpener
 import org.readium.r2.streamer.parser.DefaultPublicationParser
@@ -20,6 +23,10 @@ import org.readium.r2.streamer.parser.DefaultPublicationParser
 class ReaderService(
   private val reactContext: ReactApplicationContext
 ) {
+  private companion object {
+    const val REMOTE_READ_BUFFER_BYTES = 512 * 1024
+  }
+
   private val httpClient = DefaultHttpClient()
   private val assetRetriever = AssetRetriever(
     reactContext.contentResolver,
@@ -96,18 +103,26 @@ class ReaderService(
     callback: suspend (fragment: BaseReaderFragment) -> Unit
   ) {
     val publicationUrl = resolvePublicationUrl(fileName) ?: return
-    val fileExtension = extensionHint(fileName)
+    val hints = FormatHints(fileExtension = extensionHint(fileName)?.let { FileExtension(it) })
 
-    val asset = assetRetriever
-      .retrieve(
-        publicationUrl,
-        FormatHints(fileExtension = fileExtension?.let { FileExtension(it) })
-      )
-      .onFailure {
-        RNLog.w(reactContext, "Unable to retrieve publication asset: ${it.message}")
-      }
-      .getOrNull()
-      ?: return
+    // A remote archive is read through a large buffer so the ZIP reader's many
+    // small seeks become a handful of range requests instead of one each;
+    // without it a single page image can take tens of seconds to arrive.
+    val asset: Asset? = if (isHttpUrl(fileName)) {
+      assetRetriever
+        .retrieve(
+          HttpResource(publicationUrl, httpClient).buffered(bufferSize = REMOTE_READ_BUFFER_BYTES),
+          hints
+        )
+        .onFailure { RNLog.w(reactContext, "Unable to retrieve remote publication: ${it.message}") }
+        .getOrNull()
+    } else {
+      assetRetriever
+        .retrieve(publicationUrl, hints)
+        .onFailure { RNLog.w(reactContext, "Unable to retrieve publication asset: ${it.message}") }
+        .getOrNull()
+    }
+    if (asset == null) return
 
     publicationOpener
       .open(
