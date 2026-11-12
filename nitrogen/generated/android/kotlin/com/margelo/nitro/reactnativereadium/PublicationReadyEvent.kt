@@ -25,7 +25,13 @@ data class PublicationReadyEvent(
   val positions: Array<Locator>,
   @DoNotStrip
   @Keep
-  val metadata: PublicationMetadata
+  val metadata: PublicationMetadata,
+  @DoNotStrip
+  @Keep
+  val pageWidth: Double?,
+  @DoNotStrip
+  @Keep
+  val pageHeight: Double?
 ) {
   /* primary constructor */
 
@@ -37,8 +43,8 @@ data class PublicationReadyEvent(
     @Keep
     @Suppress("unused")
     @JvmStatic
-    private fun fromCpp(tableOfContents: Array<Link>, positions: Array<Locator>, metadata: PublicationMetadata): PublicationReadyEvent {
-      return PublicationReadyEvent(tableOfContents, positions, metadata)
+    private fun fromCpp(tableOfContents: Array<Link>, positions: Array<Locator>, metadata: PublicationMetadata, pageWidth: Double?, pageHeight: Double?): PublicationReadyEvent {
+      return PublicationReadyEvent(tableOfContents, positions, metadata, pageWidth, pageHeight)
     }
   }
 }

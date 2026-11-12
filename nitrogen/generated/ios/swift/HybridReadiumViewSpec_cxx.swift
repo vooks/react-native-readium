@@ -374,7 +374,7 @@ open class HybridReadiumViewSpec_cxx {
       }()
     }
   }
-
+  
   public final var onTap: bridge.std__optional_std__function_void____ {
     @inline(__always)
     get {

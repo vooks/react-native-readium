@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.reactnativereadium.utils.EventChannel
+import com.reactnativereadium.utils.PageSize
 import kotlinx.coroutines.channels.Channel
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.shared.publication.Locator
@@ -40,7 +41,8 @@ class ReaderViewModel(
         class PublicationReady(
             val tableOfContents: List<Link>,
             val positions: List<Locator>,
-            val metadata: Metadata
+            val metadata: Metadata,
+            val pageSize: PageSize?
         ) : Event()
         class DecorationActivated(
             val decoration: Decoration,

@@ -18,7 +18,7 @@ public extension PublicationReadyEvent {
   /**
    * Create a new instance of `PublicationReadyEvent`.
    */
-  init(tableOfContents: [Link], positions: [Locator], metadata: PublicationMetadata) {
+  init(tableOfContents: [Link], positions: [Locator], metadata: PublicationMetadata, pageWidth: Double?, pageHeight: Double?) {
     self.init({ () -> bridge.std__vector_Link_ in
       var __vector = bridge.create_std__vector_Link_(tableOfContents.count)
       for __item in tableOfContents {
@@ -31,7 +31,19 @@ public extension PublicationReadyEvent {
         __vector.push_back(__item)
       }
       return __vector
-    }(), metadata)
+    }(), metadata, { () -> bridge.std__optional_double_ in
+      if let __unwrappedValue = pageWidth {
+        return bridge.create_std__optional_double_(__unwrappedValue)
+      } else {
+        return .init()
+      }
+    }(), { () -> bridge.std__optional_double_ in
+      if let __unwrappedValue = pageHeight {
+        return bridge.create_std__optional_double_(__unwrappedValue)
+      } else {
+        return .init()
+      }
+    }())
   }
 
   @inline(__always)
@@ -47,5 +59,29 @@ public extension PublicationReadyEvent {
   @inline(__always)
   var metadata: PublicationMetadata {
     return self.__metadata
+  }
+  
+  @inline(__always)
+  var pageWidth: Double? {
+    return { () -> Double? in
+      if bridge.has_value_std__optional_double_(self.__pageWidth) {
+        let __unwrapped = bridge.get_std__optional_double_(self.__pageWidth)
+        return __unwrapped
+      } else {
+        return nil
+      }
+    }()
+  }
+  
+  @inline(__always)
+  var pageHeight: Double? {
+    return { () -> Double? in
+      if bridge.has_value_std__optional_double_(self.__pageHeight) {
+        let __unwrapped = bridge.get_std__optional_double_(self.__pageHeight)
+        return __unwrapped
+      } else {
+        return nil
+      }
+    }()
   }
 }

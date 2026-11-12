@@ -235,11 +235,14 @@ class HybridReadiumView: HybridReadiumViewSpec {
       }
 
       let metadata = readiumMetadataToNitro(vc.publication.metadata)
+      let pageSize = await fixedLayoutPageSize(vc.publication)
 
       let event = PublicationReadyEvent(
         tableOfContents: tocLinks,
         positions: positions,
-        metadata: metadata
+        metadata: metadata,
+        pageWidth: pageSize?.width,
+        pageHeight: pageSize?.height
       )
 
       self.onPublicationReady?(event)

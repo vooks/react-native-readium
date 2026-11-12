@@ -61,6 +61,10 @@ namespace margelo::nitro::readium {
       jni::local_ref<jni::JArrayClass<JLocator>> positions = this->getFieldValue(fieldPositions);
       static const auto fieldMetadata = clazz->getField<JPublicationMetadata>("metadata");
       jni::local_ref<JPublicationMetadata> metadata = this->getFieldValue(fieldMetadata);
+      static const auto fieldPageWidth = clazz->getField<jni::JDouble>("pageWidth");
+      jni::local_ref<jni::JDouble> pageWidth = this->getFieldValue(fieldPageWidth);
+      static const auto fieldPageHeight = clazz->getField<jni::JDouble>("pageHeight");
+      jni::local_ref<jni::JDouble> pageHeight = this->getFieldValue(fieldPageHeight);
       return PublicationReadyEvent(
         [&]() {
           size_t __size = tableOfContents->size();
@@ -82,7 +86,9 @@ namespace margelo::nitro::readium {
           }
           return __vector;
         }(),
-        metadata->toCpp()
+        metadata->toCpp(),
+        pageWidth != nullptr ? std::make_optional(pageWidth->value()) : std::nullopt,
+        pageHeight != nullptr ? std::make_optional(pageHeight->value()) : std::nullopt
       );
     }
 
@@ -92,7 +98,7 @@ namespace margelo::nitro::readium {
      */
     [[maybe_unused]]
     static jni::local_ref<JPublicationReadyEvent::javaobject> fromCpp(const PublicationReadyEvent& value) {
-      using JSignature = JPublicationReadyEvent(jni::alias_ref<jni::JArrayClass<JLink>>, jni::alias_ref<jni::JArrayClass<JLocator>>, jni::alias_ref<JPublicationMetadata>);
+      using JSignature = JPublicationReadyEvent(jni::alias_ref<jni::JArrayClass<JLink>>, jni::alias_ref<jni::JArrayClass<JLocator>>, jni::alias_ref<JPublicationMetadata>, jni::alias_ref<jni::JDouble>, jni::alias_ref<jni::JDouble>);
       static const auto clazz = javaClassStatic();
       static const auto create = clazz->getStaticMethod<JSignature>("fromCpp");
       return create(
@@ -117,7 +123,9 @@ namespace margelo::nitro::readium {
           }
           return __array;
         }(),
-        JPublicationMetadata::fromCpp(value.metadata)
+        JPublicationMetadata::fromCpp(value.metadata),
+        value.pageWidth.has_value() ? jni::JDouble::valueOf(value.pageWidth.value()) : nullptr,
+        value.pageHeight.has_value() ? jni::JDouble::valueOf(value.pageHeight.value()) : nullptr
       );
     }
   };

@@ -324,7 +324,9 @@ class HybridReadiumView(private val context: android.content.Context) : HybridRe
           onPublicationReady?.invoke(PublicationReadyEvent(
             tableOfContents = flattenReadiumLinks(event.tableOfContents).toTypedArray(),
             positions = event.positions.map { readiumLocatorToNitro(it) }.toTypedArray(),
-            metadata = readiumMetadataToNitro(event.metadata)
+            metadata = readiumMetadataToNitro(event.metadata),
+            pageWidth = event.pageSize?.width,
+            pageHeight = event.pageSize?.height
           ))
         }
         is ReaderViewModel.Event.DecorationActivated -> {

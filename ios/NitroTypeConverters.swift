@@ -202,7 +202,7 @@ func readiumMetadataToNitro(_ meta: ReadiumShared.Metadata) -> PublicationMetada
     publisher: contributors(meta.publishers),
     imprint: contributors(meta.imprints),
     subject: subjects(meta.subjects),
-    layout: nil,
+    layout: meta.layout?.rawValue,
     readingProgression: meta.readingProgression.rawValue,
     description: meta.description,
     duration: meta.duration,

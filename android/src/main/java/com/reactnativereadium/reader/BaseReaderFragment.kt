@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.reactnativereadium.utils.EventChannel
 import com.reactnativereadium.utils.LinkOrLocator
+import com.reactnativereadium.utils.fixedLayoutPageSize
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -70,11 +71,18 @@ abstract class BaseReaderFragment : Fragment() {
         emptyList<Locator>()
       }
 
+      val pageSize = try {
+        fixedLayoutPageSize(model.publication)
+      } catch (e: Exception) {
+        null
+      }
+
       channel.send(
         ReaderViewModel.Event.PublicationReady(
           tableOfContents = model.publication.tableOfContents,
           positions = positions,
-          metadata = model.publication.metadata
+          metadata = model.publication.metadata,
+          pageSize = pageSize
         )
       )
     }

@@ -12,6 +12,7 @@ import org.readium.r2.navigator.preferences.TextAlign
 import org.readium.r2.navigator.preferences.Theme
 import org.readium.r2.navigator.preferences.Color as ReadiumColor
 import org.readium.r2.shared.util.Language
+import org.readium.r2.shared.publication.presentation.presentation
 import org.readium.r2.shared.publication.Locator as ReadiumLocator
 import org.readium.r2.shared.publication.Link as ReadiumLink
 import org.readium.r2.shared.publication.Metadata as ReadiumMetadata
@@ -311,7 +312,7 @@ internal fun readiumMetadataToNitro(meta: ReadiumMetadata): PublicationMetadata 
     publisher = contributors(meta.publishers),
     imprint = contributors(meta.imprints),
     subject = subjects(meta.subjects),
-    layout = null,
+    layout = meta.presentation.layout?.value,
     readingProgression = meta.readingProgression?.name?.lowercase(),
     description = meta.description,
     duration = meta.duration,

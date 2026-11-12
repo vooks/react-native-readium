@@ -197,6 +197,8 @@ export interface PublicationReadyEvent {
   tableOfContents: Link[];
   positions: Locator[];
   metadata: PublicationMetadata;
+  pageWidth?: number;
+  pageHeight?: number;
 }
 
 export interface DecorationActivatedEvent {

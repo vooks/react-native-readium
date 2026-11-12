@@ -119,7 +119,7 @@ abstract class HybridReadiumViewSpec: HybridView() {
     set(value) {
       onSelectionAction = value?.let { it }
     }
-
+  
   abstract var onTap: (() -> Unit)?
   
   private var onTap_cxx: Func_void?
